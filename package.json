@@ -1,0 +1,14 @@
+{
+  "name": "rohit-power-tools",
+  "version": "1.0.0",
+  "description": "Rohit Power Tools – Full Stack E-commerce",
+  "scripts": {
+    "install-all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\"",
+    "seed": "cd backend && node seed.js",
+    "build": "cd frontend && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
