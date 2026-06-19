@@ -116,11 +116,13 @@ export default function Navbar() {
   return (
     <nav style={{
       position: 'fixed',
+      /* Floating pill navbar — top:10 so shader shows behind it */
       top: 10, left: 10, right: 10,
       zIndex: 1000,
       background: navBg,
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
+      /* Fully rounded corners on all sides */
       borderRadius: '16px',
       border: `1px solid ${navBorder}`,
       padding: '8px 16px',

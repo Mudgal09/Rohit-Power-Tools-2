@@ -26,7 +26,7 @@ const AdminRoute = ({ children }) => {
 
 export default function App() {
   const location = useLocation();
-  const fullscreenPages = ['/login', '/register'];
+  const fullscreenPages = ['/login', '/register', '/'];
   const isFullscreen = fullscreenPages.includes(location.pathname);
 
   return (

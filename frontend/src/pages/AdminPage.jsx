@@ -28,10 +28,14 @@ export default function AdminPage() {
   const [featureInput, setFeatureInput] = useState('');
   const [imageUrls, setImageUrls] = useState('');
   const [saving, setSaving] = useState(false);
+  const [productPage, setProductPage] = useState(1);
+  const [productTotalPages, setProductTotalPages] = useState(1);
+  const [productTotal, setProductTotal] = useState(0);
+  const PRODUCT_LIMIT = 20;
 
   useEffect(() => { fetchDashboard(); }, []);
   useEffect(() => {
-    if (tab === 'products') fetchProducts();
+    if (tab === 'products') fetchProducts(1);
     else if (tab === 'users') fetchUsers();
     else if (tab === 'orders') fetchOrders();
   }, [tab]);
@@ -43,11 +47,14 @@ export default function AdminPage() {
     } catch {}
   };
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (page = 1) => {
     setLoading(true);
     try {
-      const { data } = await axios.get(`${API}/products?limit=100`);
+      const { data } = await axios.get(`${API}/products?limit=${PRODUCT_LIMIT}&page=${page}`);
       setProducts(data.products);
+      setProductPage(data.page);
+      setProductTotalPages(data.pages);
+      setProductTotal(data.total);
     } catch {} finally { setLoading(false); }
   };
 
@@ -99,7 +106,7 @@ export default function AdminPage() {
         toast.success('Product created!');
       }
       setShowProductForm(false);
-      fetchProducts();
+      fetchProducts(productPage);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Save failed');
     } finally { setSaving(false); }
@@ -110,7 +117,7 @@ export default function AdminPage() {
     try {
       await axios.delete(`${API}/products/${id}`);
       toast.success('Product deleted');
-      fetchProducts();
+      fetchProducts(productPage);
     } catch { toast.error('Delete failed'); }
   };
 
@@ -153,7 +160,7 @@ export default function AdminPage() {
   return (
     <div style={{ background: 'var(--bg-black)', minHeight: '100vh' }}>
       {/* Header with Viola shader */}
-      <div style={{ position: 'relative', height: 200, overflow: 'hidden', marginTop: '-70px' }}>
+      <div style={{ position: 'relative', height: 200, overflow: 'hidden', marginTop: '-76px' }}>
         <div style={{ position: 'absolute', inset: 0 }}>
           <ShaderGradientCanvas style={{ width: '100%', height: '100%' }}>
             <ShaderGradient
@@ -284,7 +291,7 @@ export default function AdminPage() {
               <div>
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <h4 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, margin: 0 }}>
-                    Products ({products.length})
+                    Products ({productTotal}) <span style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 500 }}>— Page {productPage} of {productTotalPages}</span>
                   </h4>
                   <button onClick={() => openProductForm()} className="btn-orange">
                     <FiPlus size={14} /> Add Product
@@ -392,6 +399,7 @@ export default function AdminPage() {
                 )}
 
                 {loading ? <div className="text-center py-5"><div className="loader mx-auto" /></div> : (
+                  <>
                   <div className="row g-3">
                     {products.map(p => (
                       <div key={p._id} className="col-12">
@@ -416,6 +424,30 @@ export default function AdminPage() {
                       </div>
                     ))}
                   </div>
+                  {/* Pagination controls */}
+                  {productTotalPages > 1 && (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 24 }}>
+                      <button
+                        onClick={() => fetchProducts(productPage - 1)}
+                        disabled={productPage === 1}
+                        style={{ background: 'var(--input-bg)', border: '1px solid var(--border)', color: 'var(--text-light)', borderRadius: 8, padding: '8px 16px', cursor: productPage === 1 ? 'not-allowed' : 'pointer', opacity: productPage === 1 ? 0.4 : 1, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 13 }}>
+                        ← Prev
+                      </button>
+                      {Array.from({ length: productTotalPages }, (_, i) => i + 1).map(p => (
+                        <button key={p} onClick={() => fetchProducts(p)}
+                          style={{ background: p === productPage ? 'var(--orange)' : 'var(--input-bg)', border: `1px solid ${p === productPage ? 'var(--orange)' : 'var(--border)'}`, color: p === productPage ? 'white' : 'var(--text-muted)', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 13, minWidth: 38 }}>
+                          {p}
+                        </button>
+                      ))}
+                      <button
+                        onClick={() => fetchProducts(productPage + 1)}
+                        disabled={productPage === productTotalPages}
+                        style={{ background: 'var(--input-bg)', border: '1px solid var(--border)', color: 'var(--text-light)', borderRadius: 8, padding: '8px 16px', cursor: productPage === productTotalPages ? 'not-allowed' : 'pointer', opacity: productPage === productTotalPages ? 0.4 : 1, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 13 }}>
+                        Next →
+                      </button>
+                    </div>
+                  )}
+                  </>
                 )}
               </div>
             )}

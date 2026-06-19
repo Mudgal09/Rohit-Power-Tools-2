@@ -93,7 +93,7 @@ export default function HomePage() {
         {/* Subtle dark overlay — less than before so shader pops */}
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.28)', zIndex: 1 }} />
 
-        <div className="container" style={{ position: 'relative', zIndex: 2, paddingTop: '90px' }}>
+        <div className="container" style={{ position: 'relative', zIndex: 2, paddingTop: '110px' }}>
           <div className="row align-items-center" style={{ minHeight: '85vh' }}>
             <div className="col-lg-7">
               <div style={{ animation: 'fadeUp 0.7s ease' }}>
